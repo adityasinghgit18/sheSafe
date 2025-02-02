@@ -1,0 +1,85 @@
+import time
+import machine
+import network
+import urequests
+from machine import Pin, ADC, I2C
+from imu import MPU6050
+from hcsr04 import HCSR04
+from max30102 import MAX30102
+
+# Wi-Fi Connection
+def connect_wifi(ssid, password):
+    wlan = network.WLAN(network.STA_IF)
+    wlan.active(True)
+    wlan.connect(ssid, password)
+    while not wlan.isconnected():
+        time.sleep(1)
+    print("Connected to WiFi")
+    return wlan.ifconfig()
+
+# Emergency Contact API URL
+EMERGENCY_API = "http://your-api.com/emergency"
+
+# Initialize Sensors
+i2c = I2C(0, scl=Pin(22), sda=Pin(21))
+mpu = MPU6050(i2c)
+hr_sensor = MAX30102(i2c=i2c)
+ultrasonic = HCSR04(trigger_pin=5, echo_pin=18)
+button = Pin(15, Pin.IN, Pin.PULL_UP)
+microphone = ADC(Pin(34))  # Simulated microphone input
+
+# Detect Gesture-Based Emergency Activation
+def detect_movement():
+    accel = mpu.acceleration
+    if abs(accel[0]) > 2 or abs(accel[1]) > 2:
+        print("Emergency Gesture Detected!")
+        send_sos_alert("Strong grab detected!")
+
+# Monitor Heart Rate Spikes
+def check_heart_rate():
+    heart_rate = hr_sensor.get_heart_rate()
+    if heart_rate > 120:
+        print("High Heart Rate Detected! Sending alert...")
+        send_sos_alert("High heart rate detected!")
+
+# Check for Sudden Impact (Fall Detection)
+def check_fall():
+    accel = mpu.acceleration
+    if abs(accel[2]) < 0.5:
+        print("Possible fall detected! Sending alert...")
+        send_sos_alert("Fall detected!")
+
+# Detect Loud Noise
+def check_noise():
+    noise_level = microphone.read()
+    if noise_level > 3000:  # Threshold for loud noise
+        print("Loud noise detected! Recording started...")
+        send_sos_alert("Loud noise detected! Recording started...")
+
+# Detect Ride Deviation
+def check_ride_deviation(current_location, expected_route):
+    if current_location not in expected_route:
+        print("Ride deviation detected! Sending alert...")
+        send_sos_alert("Ride deviation detected!")
+
+# Send Emergency Alert
+def send_sos_alert(message):
+    location = get_location()
+    data = {"message": message, "location": location}
+    try:
+        response = urequests.post(EMERGENCY_API, json=data)
+        print("SOS Alert Sent!", response.text)
+    except Exception as e:
+        print("Error sending alert:", e)
+
+# Simulated GPS Location
+def get_location():
+    return {"latitude": 12.9716, "longitude": 77.5946}  # Example coordinates
+
+# Main Loop
+while True:
+    detect_movement()
+    check_heart_rate()
+    check_fall()
+    check_noise()
+    time.sleep(1)
