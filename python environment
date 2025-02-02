@@ -1,0 +1,67 @@
+import time
+import random
+import requests
+
+# Emergency Contact API URL (Replace with actual API endpoint)
+EMERGENCY_API = "http://your-api.com/emergency"
+
+# Simulated Heart Rate Sensor
+def get_heart_rate():
+    return random.randint(60, 140)  # Simulated BPM
+
+# Simulated Gesture Detection (Strong Grab)
+def detect_movement():
+    movement_detected = random.choice([True, False])
+    if movement_detected:
+        print("🚨 Strong Grab Detected! Sending Alert...")
+        send_sos_alert("Strong grab detected!")
+
+# Simulated Fall Detection
+def check_fall():
+    fall_detected = random.choice([True, False])
+    if fall_detected:
+        print("🚨 Fall Detected! Sending Alert...")
+        send_sos_alert("Fall detected!")
+
+# Simulated Noise Detection
+def check_noise():
+    noise_level = random.randint(1000, 5000)  # Simulating microphone input
+    if noise_level > 3000:  # Threshold for loud noise
+        print("📢 Loud Noise Detected! Recording Started...")
+        send_sos_alert("Loud noise detected! Recording started...")
+
+# Simulated Ride Deviation Detection
+expected_route = ["Point A", "Point B", "Point C"]
+def check_ride_deviation():
+    current_location = random.choice(["Point A", "Point B", "Unknown Location"])
+    if current_location not in expected_route:
+        print("🚕 Ride Deviation Detected! Sending Alert...")
+        send_sos_alert("Ride deviation detected!")
+
+# Send Emergency Alert (Simulated API Call)
+def send_sos_alert(message):
+    location = get_location()
+    data = {"message": message, "location": location}
+    try:
+        response = requests.post(EMERGENCY_API, json=data)
+        print("✅ SOS Alert Sent!", response.text)
+    except Exception as e:
+        print("❌ Error sending alert:", e)
+
+# Simulated GPS Location
+def get_location():
+    return {"latitude": 12.9716, "longitude": 77.5946}  # Example coordinates
+
+# Main Loop (Simulating Continuous Monitoring)
+while True:
+    heart_rate = get_heart_rate()
+    if heart_rate > 120:
+        print(f"💓 High Heart Rate Detected: {heart_rate} BPM")
+        send_sos_alert("High heart rate detected!")
+
+    detect_movement()
+    check_fall()
+    check_noise()
+    check_ride_deviation()
+    
+    time.sleep(2)  # Simulate real-time monitoring
