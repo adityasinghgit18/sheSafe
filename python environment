@@ -13,29 +13,29 @@ def get_heart_rate():
 def detect_movement():
     movement_detected = random.choice([True, False])
     if movement_detected:
-        print("🚨 Strong Grab Detected! Sending Alert...")
+        print(" Strong Grab Detected! Sending Alert")
         send_sos_alert("Strong grab detected!")
 
 # Simulated Fall Detection
 def check_fall():
     fall_detected = random.choice([True, False])
     if fall_detected:
-        print("🚨 Fall Detected! Sending Alert...")
+        print(" Fall Detected! Sending Alert")
         send_sos_alert("Fall detected!")
 
 # Simulated Noise Detection
 def check_noise():
     noise_level = random.randint(1000, 5000)  # Simulating microphone input
     if noise_level > 3000:  # Threshold for loud noise
-        print("📢 Loud Noise Detected! Recording Started...")
-        send_sos_alert("Loud noise detected! Recording started...")
+        print("Loud Noise Detected! Recording Started")
+        send_sos_alert("Loud noise detected! Recording started")
 
 # Simulated Ride Deviation Detection
 expected_route = ["Point A", "Point B", "Point C"]
 def check_ride_deviation():
     current_location = random.choice(["Point A", "Point B", "Unknown Location"])
     if current_location not in expected_route:
-        print("🚕 Ride Deviation Detected! Sending Alert...")
+        print("Ride Deviation Detected! Sending Alert")
         send_sos_alert("Ride deviation detected!")
 
 # Send Emergency Alert (Simulated API Call)
@@ -44,9 +44,9 @@ def send_sos_alert(message):
     data = {"message": message, "location": location}
     try:
         response = requests.post(EMERGENCY_API, json=data)
-        print("✅ SOS Alert Sent!", response.text)
+        print("SOS Alert Sent!", response.text)
     except Exception as e:
-        print("❌ Error sending alert:", e)
+        print("Error sending alert:", e)
 
 # Simulated GPS Location
 def get_location():
@@ -56,7 +56,7 @@ def get_location():
 while True:
     heart_rate = get_heart_rate()
     if heart_rate > 120:
-        print(f"💓 High Heart Rate Detected: {heart_rate} BPM")
+        print(f"High Heart Rate Detected: {heart_rate} BPM")
         send_sos_alert("High heart rate detected!")
 
     detect_movement()
